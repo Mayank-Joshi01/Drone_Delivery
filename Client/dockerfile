@@ -1,0 +1,12 @@
+FROM node:24.13.1
+WORKDIR /Client
+
+COPY package*.json ./
+
+RUN npm install --legacy-peer-deps
+
+EXPOSE 5173
+
+COPY . .
+
+CMD [ "npm", "run", "dev" ]

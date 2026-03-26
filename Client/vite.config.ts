@@ -8,4 +8,10 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  server: {
+     watch: {
+      usePolling: true, // Forces Vite to check files manually
+    },
+    host: true, // Needed so you can access it via localhost:5173
+  }
 })
