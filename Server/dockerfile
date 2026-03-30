@@ -1,12 +1,19 @@
-FROM node:20.19.0
+# FROM node:20.19.0
+
+# 1. Start with a Linux environment that has Node.js installed
+FROM node:20-bookworm
+
+# 2. Install the C++ compiler (g++) inside the Linux container
+RUN apt-get update && apt-get install -y g++
+
 WORKDIR /Server
 
 COPY package.json package.json
 COPY  package-lock.json package-lock.json
 RUN npm install
 
-EXPOSE 5000
-
 COPY . .
 
-CMD [ "npm", "start" ]
+EXPOSE 5000
+
+CMD [ "npm","start" ]
