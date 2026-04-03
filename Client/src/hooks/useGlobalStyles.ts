@@ -1,15 +1,10 @@
-/**
- * hooks/useGlobalStyles.js
- * -------------------------
- * Injects a <style> tag containing global keyframes, font imports,
- * and Leaflet control overrides on mount; removes it on unmount.
- *
- * Called once at the AppLayout level — never inside loops or conditionals.
- */
-
 import { useEffect } from "react";
 
-const GLOBAL_CSS = `
+/**
+ * Global CSS for the DroneOps Dispatch application.
+ * Using a template literal for standard string typing.
+ */
+const GLOBAL_CSS: string = `
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Syne:wght@400;600;700;800&display=swap');
 
   /* ── Animations ─────────────────────────────────────────────── */
@@ -35,9 +30,9 @@ const GLOBAL_CSS = `
   }
 
   /* ── Leaflet overrides ──────────────────────────────────────── */
-  .leaflet-container          { font-family:'JetBrains Mono',monospace !important; }
+  .leaflet-container           { font-family:'JetBrains Mono',monospace !important; }
   .leaflet-control-attribution{ display:none !important; }
-  .leaflet-control-zoom a     {
+  .leaflet-control-zoom a      {
     background:#0a1a12 !important;
     border-color:#1a3a2a !important;
     color:#00ff88 !important;
@@ -59,11 +54,22 @@ const GLOBAL_CSS = `
   ::-webkit-scrollbar-thumb:hover { background:#00ff8844; }
 `;
 
-export function useGlobalStyles() {
+/**
+ * Custom Hook to inject global application styles into the document head.
+ * Cleanup ensures the style tag is removed if the component unmounts.
+ */
+export function useGlobalStyles(): void {
   useEffect(() => {
-    const tag = document.createElement("style");
+    // Typing the element as HTMLStyleElement
+    const tag: HTMLStyleElement = document.createElement("style");
     tag.textContent = GLOBAL_CSS;
     document.head.appendChild(tag);
-    return () => document.head.removeChild(tag);
+
+    // Cleanup function
+    return () => {
+      if (document.head.contains(tag)) {
+        document.head.removeChild(tag);
+      }
+    };
   }, []);
 }

@@ -1,20 +1,16 @@
-/**
- * components/sidebar/ConfigInput.jsx
- * ------------------------------------
- * Reusable labelled <input type="number"> for the Drone Config panel.
- *
- * Props
- * ─────
- * label    string           shown above the field (auto-uppercased via CSS)
- * value    number
- * onChange (number) => void
- * min      number
- * max      number
- * step     number
- * icon     lucide-react component (optional)
- * unit     string           shown right-aligned in the label row (optional)
- */
-export default function ConfigInput({ label, value, onChange, min, max, step, icon: Icon, unit }) {
+interface ConfigInputProps {
+  label: string;
+  value: number | string;
+  onChange: (newValue: number) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+  icon?: React.ComponentType<{ size?: number }>;
+  unit?: string;
+}
+
+
+export default function ConfigInput({ label, value, onChange, min, max, step, icon: Icon, unit }: ConfigInputProps) {
   return (
     <div>
       {/* Label row */}

@@ -1,21 +1,9 @@
 import './App.css'
-
-/**
- * App.jsx
- * --------
- * Root component. Wraps the entire dashboard in <DroneProvider> so every
- * child can access shared state via useDrone().
- *
- * Layout (top → bottom):
- *   <Header />          – 52 px top bar
- *   <Sidebar />         – 300 px left panel  ┐ flex row
- *   <MapView />         – remaining width     │
- *   <BottomBar />       – 68 px footer        ┘
- *   <AddParcelModal />  – fixed overlay (portal-style, outside the flow)
- */
-
 import { DroneProvider }  from "./context/DroneContext";
 import { useGlobalStyles } from "./hooks/useGlobalStyles";
+import { DepoProvider }   from "./context/DepoContext";
+import { PathProvider } from './context/PathContext';
+import { ParcelProvider } from './context/ParcleContext';
 
 import Header        from "./components/header/Header";
 import Sidebar       from "./components/sidebar/Sidebar";
@@ -60,9 +48,15 @@ function AppLayout() {
 // ─── Public export ────────────────────────────────────────────────────────────
 export default function App() {
   return (
+    <DepoProvider>
+    <PathProvider>
+      <ParcelProvider>
     <DroneProvider>
       <AppLayout />
     </DroneProvider>
+    </ParcelProvider>
+    </PathProvider>
+    </DepoProvider>
   );
 }
 

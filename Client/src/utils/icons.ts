@@ -1,22 +1,15 @@
-/**
- * utils/icons.js
- * --------------
- * All custom Leaflet divIcon factories live here.
- * Import these into map components — never construct divIcons inside JSX.
- */
-
 import L from "leaflet";
 import { LEAFLET_ICON_URLS } from "../constants";
 
-// ─── One-time fix for bundler-broken default Leaflet icon paths ───────────────
-export function fixLeafletDefaultIcons() {
-  delete L.Icon.Default.prototype._getIconUrl;
+export function fixLeafletDefaultIcons(): void {
+  const defaultIcon = L.Icon.Default.prototype as any;
+  delete defaultIcon._getIconUrl;
+  
   L.Icon.Default.mergeOptions(LEAFLET_ICON_URLS);
 }
 
-// ─── Hub: animated pulsing circle ────────────────────────────────────────────
-export const hubIcon = L.divIcon({
-  className: "",
+export const hubIcon: L.DivIcon = L.divIcon({
+  className: "hub-icon-container", // Added a class for cleaner debugging
   html: `
     <div style="
       width:44px;height:44px;
@@ -39,12 +32,17 @@ export const hubIcon = L.divIcon({
   iconAnchor: [22, 22],
 });
 
-// ─── Parcel: colour by priority, numbered index badge ────────────────────────
-export function createParcelIcon(priority, index) {
-  const color =
+/**
+ * Parcel: colour by priority, numbered index badge.
+ * @param priority - Numeric value 1-10
+ * @param index - The order of the stop in the manifest
+ */
+export function createParcelIcon(priority: number, index: number): L.DivIcon {
+  const color: string =
     priority >= 8 ? "#ff4444" : priority >= 5 ? "#ffaa00" : "#44aaff";
+
   return L.divIcon({
-    className: "",
+    className: "parcel-icon-container",
     html: `
       <div style="
         width:36px;height:36px;
