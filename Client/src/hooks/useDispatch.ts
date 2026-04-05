@@ -29,6 +29,7 @@ export function useDispatch(): UseDispatchReturn {
       setIsCalculating(true);
 
       const Parcels = parcels.map(p => ({
+        id: p.id,
         lat: p.lat,
         lng: p.lon,
         wt : p.weight,
@@ -38,7 +39,7 @@ export function useDispatch(): UseDispatchReturn {
       const Drone = {
         maxPayload: droneConfig.maxPayload,
         batteryLife: droneConfig.baseEnergy,  // base enery 
-        WTF : droneConfig.weightImpactFactor, // weight impact factor
+        WIF : droneConfig.weightImpactFactor, // weight impact factor
         NumberOfDrone: droneConfig.NumberOfDrone, // Number of Drones
         speed: droneConfig.speed, // Drone speed (m/s)
       };
@@ -62,6 +63,7 @@ const dummyResponse = {
       "Energy": 78.5,
       "Distance": 4200,
       "Parcels": 3,
+      "Parcels_Delivered": [Parcels[0].id, Parcels[1].id, Parcels[2].id],
       "Waypoints": waypoints1
     },
     {
@@ -69,6 +71,7 @@ const dummyResponse = {
       "Energy": 91.3,
       "Distance": 6750,
       "Parcels": 4,
+      "Parcels_Delivered": [Parcels[3].id, Parcels[4].id, Parcels[5].id, Parcels[6].id],
       "Waypoints": waypoints2
     },
     {
@@ -76,6 +79,7 @@ const dummyResponse = {
       "Energy": 54.2,
       "Distance": 2800,
       "Parcels": 2,
+      "Parcels_Delivered": [Parcels[7].id, Parcels[8].id],
       "Waypoints": waypoints3
     },
     {
@@ -83,6 +87,7 @@ const dummyResponse = {
       "Energy": 88.7,
       "Distance": 8100,
       "Parcels": 5,
+      "Parcels_Delivered": [Parcels[9].id, Parcels[10].id, Parcels[11].id, Parcels[12].id, Parcels[13].id],
       "Waypoints": waypoints4
     },
     {
@@ -90,6 +95,7 @@ const dummyResponse = {
       "Energy": 65.9,
       "Distance": 5300,
       "Parcels": 3,
+      "Parcels_Delivered": [Parcels[14].id, Parcels[15].id, Parcels[16].id],
       "Waypoints": waypoints5
     },
   ]
@@ -104,6 +110,15 @@ const dummyResponse = {
       calculatePath([Depo['lat'], Depo['lon']] , response.paths) ;
 
       const totalParcelsDelivered = response.paths.reduce((sum, path) => sum + path.Parcels, 0);
+
+      parcels.forEach(p => {
+        if (response.paths.some(path => path.Parcels_Delivered.includes(p.id))) {
+          p.delivered = true;
+        } else {
+          p.delivered = false;
+        }
+        console.log(`Parcel ${p.id} delivered status: ${p.delivered}`);
+      });
 
       setDeliveryStats({
         totalParcelsDelivered: totalParcelsDelivered,

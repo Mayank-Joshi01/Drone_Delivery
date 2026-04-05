@@ -13,6 +13,7 @@ export interface Parcel {
   weight: number;
   lat: number;
   lon : number;
+  delivered: boolean | null;
 }
 
 interface PriorityBadgeProps {
@@ -61,6 +62,11 @@ function ParcelRow({ parcel, index, onDelete }: ParcelRowProps) {
         <div className="flex gap-2 mt-1 items-center">
           <PriorityBadge priority={parcel.priority} />
           <span className="text-[10px] text-[#4a7a6a]">{parcel.weight} kg</span>
+          {parcel.delivered !== null && (
+            <span className="text-[10px] text-[#4a7a6a]">
+              {parcel.delivered ? "Delivered" : "Not Delivered"}
+            </span>
+          )}
         </div>
       </div>
 

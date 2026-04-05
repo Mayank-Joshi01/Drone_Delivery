@@ -16,6 +16,7 @@ export interface Parcel {
   priority: number;
   lat: number;
   lon: number;
+  delivered:boolean | null;
 }
 
 interface ParcelContextType {
@@ -71,6 +72,7 @@ export function ParcelProvider({ children }: ParcelProviderProps) {
         priority,
         lat: tempLocation.lat,
         lon: tempLocation.lon,
+        delivered: null,
       };
 
       setParcels((prev) => [...prev, parcel]);
