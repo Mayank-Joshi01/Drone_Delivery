@@ -68,13 +68,13 @@ function PathStatsOverlay({ stats }: PathStatsOverlayProps) {
 
 export default function MapView() {
   const { parcels, openAddParcelModal } = useParcel();
-  const { flightPath, pathStats } = usePath();
+  const { flightPaths , currentPath ,setCurrentPath} = usePath();
 
   return (
     <div className="flex-1 relative">
       {/* ── Overlays ── */}
       {parcels.length === 0 && <RightClickHint />}
-      {pathStats && <PathStatsOverlay stats={pathStats} />}
+      {flightPaths.length > 0 && <PathStatsOverlay stats={flightPaths[currentPath].stats} />}
 
       
 
@@ -106,8 +106,14 @@ export default function MapView() {
         ))}
 
         {/* Render the flight path if coordinates exist */}
-        {flightPath.length > 1 && (
-          <AnimatedPolyline positions={flightPath} />
+        {flightPaths.length > 0 && (
+          flightPaths.map((fp, index) => (
+            <AnimatedPolyline 
+              key={index} 
+              positions={fp.path} 
+              onClick={() => {setCurrentPath(index); console.log(`Path ${index} clicked`)}} // Optional: log path clicks for debugging
+            />
+          ))
         )}
       </MapContainer>
     </div>

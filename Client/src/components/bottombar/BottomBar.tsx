@@ -40,15 +40,13 @@ function Spinner() {
 
 export default function BottomBar() {
   // Consuming our typed contexts
-  const { parcels, totalWeight, resetAll } = useParcel();
-  const { droneConfig } = useDrone();
+  const { parcels, resetAll } = useParcel();
   const { isCalculating , deliveryStats } = usePath();
 
   // Custom hook for pathfinding logic
   const { handleCalculatePath } = useDispatch();
 
   const disabled = parcels.length === 0 || isCalculating
-  const pct = payloadPercent(totalWeight, droneConfig.maxPayload);
 
   return (
     <div className="h-[68px] bg-[#050d08] border-t border-[#0f2a1a] flex items-center px-5 gap-4 shrink-0">
@@ -61,16 +59,6 @@ export default function BottomBar() {
           <StatCell icon={Package} label="PARCELS LEFT" 
         value={`${deliveryStats ? deliveryStats.ParcelsLeft : "-/-" }`}
           />
-        <StatCell 
-          icon={Weight}  
-          label="TOTAL WEIGHT"  
-          value={`${deliveryStats ? deliveryStats.TotalWeight : "-/-"} kg`} 
-        />
-        <StatCell 
-          icon={Activity} 
-          label="POWER LEFT" 
-          value={`${deliveryStats ? deliveryStats.PowerLeft : "-/-" } Wh`} 
-        />
       </div>
 
       {/* Spacer */}

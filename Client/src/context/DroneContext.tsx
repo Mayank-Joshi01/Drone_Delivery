@@ -7,6 +7,8 @@ export interface DroneConfig {
   maxPayload: number;
   baseEnergy: number;
   weightImpactFactor: number;
+  NumberOfDrone:number;
+  speed: number; // m/s
 }
 
 // 2. Define the shape of the Context value

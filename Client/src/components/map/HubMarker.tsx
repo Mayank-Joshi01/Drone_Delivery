@@ -15,7 +15,6 @@ const popupContainerStyle: CSSProperties = {
 
 export default function HubMarker() {
   const { depo} = useDepo();
-
   return (
     <Marker position={depo ? {lat: depo.lat , lng: depo.lon} : STATION_LOCATION} icon={hubIcon}>
       {/* Leaflet popups often have default white backgrounds. 

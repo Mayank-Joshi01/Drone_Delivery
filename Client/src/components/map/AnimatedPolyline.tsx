@@ -1,36 +1,40 @@
 import { Polyline } from "react-leaflet";
-import  type { LatLngExpression } from "leaflet";
+import type { LatLngExpression } from "leaflet";
 
 // ─── Interfaces ──────────────────────────────────────────────────────────────
 
 interface AnimatedPolylineProps {
-  /** * An array of coordinates defining the drone's flight path.
-   * Can be [number, number] or {lat: number, lng: number}
-   */
   positions: LatLngExpression[];
+  onClick?: () => void; 
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function AnimatedPolyline({ positions }: AnimatedPolylineProps) {
-  // Safety check to prevent Leaflet from crashing on empty paths
+export default function AnimatedPolyline({ positions, onClick }: AnimatedPolylineProps) {
   if (!positions || positions.length < 2) return null;
+
+  // We wrap the callback in an object that Leaflet understands
+  const handlers = {
+    click: () => {
+      if (onClick) onClick();
+    },
+  };
 
   return (
     <>
       {/* ── Glow Halo ── */}
-      {/* Provides a soft green outer glow for the flight path */}
       <Polyline
         positions={positions}
         pathOptions={{ 
           color: "#00ff88", 
-          weight: 6, 
+          weight: 12, // Increased hit-box weight
           opacity: 0.12 
         }}
+        // Adding eventHandlers here makes the "glow" area clickable too!
+        eventHandlers={handlers}
       />
 
       {/* ── Dashed Route ── */}
-      {/* The primary animated-style path line */}
       <Polyline
         positions={positions}
         pathOptions={{
@@ -39,7 +43,10 @@ export default function AnimatedPolyline({ positions }: AnimatedPolylineProps) {
           opacity: 0.9,
           dashArray: "10, 6",
           lineCap: "round",
+          // Suggestion: Add a cursor style so user knows it's clickable
+          className: onClick ? "cursor-pointer" : ""
         }}
+        eventHandlers={handlers}
       />
     </>
   );

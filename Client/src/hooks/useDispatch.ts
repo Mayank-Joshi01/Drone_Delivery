@@ -20,7 +20,7 @@ export function useDispatch(): UseDispatchReturn {
 
   const { droneConfig } = useDrone();
   const { parcels, totalWeight } = useParcel();
-  const { setFlightPath, setPathStats, setIsCalculating , calculatePath , setDeliveryStats } = usePath();
+  const { setIsCalculating , calculatePath , deliveryStats , setDeliveryStats, flightPaths} = usePath();
   const {depo} = useDepo(); 
   const stationLocation = depo ? [depo.lat, depo.lon] as LatLngTuple : [0, 0] as LatLngTuple;
 
@@ -31,32 +31,69 @@ export function useDispatch(): UseDispatchReturn {
       const Parcels = parcels.map(p => ({
         lat: p.lat,
         lng: p.lon,
-        id : p.id,
         wt : p.weight,
         priority : p.priority
       }));
 
       const Drone = {
         maxPayload: droneConfig.maxPayload,
-        speed: 1, // Placeholder for drone speed (m/s)
         batteryLife: droneConfig.baseEnergy,  // base enery 
         WTF : droneConfig.weightImpactFactor, // weight impact factor
+        NumberOfDrone: droneConfig.NumberOfDrone, // Number of Drones
+        speed: droneConfig.speed, // Drone speed (m/s)
       };
 
       const Depo = {
         lat: stationLocation[0],
         lon: stationLocation[1],
       };
+
+
+const waypoints1 = Parcels.slice(0, 3).map(p => [p.lat, p.lng]);   // parcels 0–2
+const waypoints2 = Parcels.slice(3, 6).map(p => [p.lat, p.lng]);   // parcels 3–5
+const waypoints3 = Parcels.slice(6, 9).map(p => [p.lat, p.lng]);   // parcels 6–8
+const waypoints4 = Parcels.slice(9, 12).map(p => [p.lat, p.lng]);  // parcels 9–11
+const waypoints5 = Parcels.slice(12, 15).map(p => [p.lat, p.lng]); // parcels 12–14
       
-      const dummyResponse = {
-        parcels: Parcels,
-        droneStats: {
-          totalDistance: 5000, // in meters
-          estimatedEnergy: 80, // in Wh
-          estimatedTime: 1800, // in seconds
-          totalWeightDelivered: totalWeight, // in kg
-        },
-      }
+const dummyResponse = {
+  paths: [
+    {
+      "Time": 342,
+      "Energy": 78.5,
+      "Distance": 4200,
+      "Parcels": 3,
+      "Waypoints": waypoints1
+    },
+    {
+      "Time": 518,
+      "Energy": 91.3,
+      "Distance": 6750,
+      "Parcels": 4,
+      "Waypoints": waypoints2
+    },
+    {
+      "Time": 215,
+      "Energy": 54.2,
+      "Distance": 2800,
+      "Parcels": 2,
+      "Waypoints": waypoints3
+    },
+    {
+      "Time": 670,
+      "Energy": 88.7,
+      "Distance": 8100,
+      "Parcels": 5,
+      "Waypoints": waypoints4
+    },
+    {
+      "Time": 430,
+      "Energy": 65.9,
+      "Distance": 5300,
+      "Parcels": 3,
+      "Waypoints": waypoints5
+    },
+  ]
+}
 
       /// api code to calculate path and stats based on Parcels, Drone, and Depo data
 
@@ -64,21 +101,13 @@ export function useDispatch(): UseDispatchReturn {
       /// Output 
       const response = dummyResponse; // Placeholder for API response
 
-      calculatePath([Depo['lat'], Depo['lon']] , response.parcels ) ;
+      calculatePath([Depo['lat'], Depo['lon']] , response.paths) ;
 
-      const droneStats = response.droneStats; // Placeholder for drone stats from API response
-
-      setPathStats({
-        totalDistance: droneStats.totalDistance,
-        estimatedEnergy: droneStats.estimatedEnergy,
-        estimatedTime: droneStats.estimatedTime,
-      });
+      const totalParcelsDelivered = response.paths.reduce((sum, path) => sum + path.Parcels, 0);
 
       setDeliveryStats({
-        totalParcelsDelivered: response.parcels.length,
-        TotalWeight: droneStats.totalWeightDelivered,
-        ParcelsLeft: Parcels.length - response.parcels.length,
-        PowerLeft: droneConfig.baseEnergy - droneStats.estimatedEnergy,
+        totalParcelsDelivered: totalParcelsDelivered,
+        ParcelsLeft: Parcels.length - totalParcelsDelivered,
       });
 
   }, [
@@ -86,8 +115,10 @@ export function useDispatch(): UseDispatchReturn {
     droneConfig, 
     totalWeight, 
     stationLocation,
-    setFlightPath, 
-    setPathStats, 
+    calculatePath,
+    deliveryStats,
+    flightPaths,
+    setDeliveryStats,
     setIsCalculating
   ]);
 

@@ -8,12 +8,16 @@ export interface DroneConfig {
   maxPayload: number;
   baseEnergy: number;
   weightImpactFactor: number;
+  NumberOfDrone:number;
+  speed: number;// m/s
 }
 
 export const DEFAULT_DRONE_CONFIG: DroneConfig = {
   maxPayload: 12,
   baseEnergy: 100,
   weightImpactFactor: 2.5,
+  NumberOfDrone: 5,
+  speed: 2,
 };
 
 // ─── Priority bands ───────────────────────────────────────────────────────────

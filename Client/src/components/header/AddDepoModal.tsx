@@ -116,13 +116,13 @@ export default function AddDepoModal({ onClose, onSave }: AddDepoModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm "
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm z-[10000]"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-[#050d08] border border-[#0f2a1a] rounded-2xl w-full max-w-md mx-4 shadow-[0_0_60px_#00ff8811] animate-[fadeSlideIn_0.25s_ease]">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#0f2a1a]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#0f2a1a] ">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00cc66] to-[#00ff88] flex items-center justify-center">
               <MapPin size={15} color="#001a0d" strokeWidth={2.5} />

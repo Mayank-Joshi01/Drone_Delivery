@@ -21,6 +21,8 @@ interface DroneFormValues {
   maxPayload: number;
   baseEnergy: number;
   weightImpactFactor: number;
+  NumberOfDrone:number;
+  speed: number;//m/s
 }
 
 // ─── Sub-Components ──────────────────────────────────────────────────────────
@@ -59,7 +61,9 @@ export default function ConfigTab() {
   const [formValues, setFormValues] = useState<DroneFormValues>({
     maxPayload: 0,
     baseEnergy: 0,
-    weightImpactFactor: 0
+    weightImpactFactor: 0,
+    NumberOfDrone: 0,
+    speed: 0,//m/s
   });
 
   const btnBase = "border-none rounded-[10px] px-6 h-11 text-[11px] font-extrabold tracking-[0.15em] flex items-center gap-2 transition-all duration-300 font-['JetBrains_Mono',monospace] min-w-[100px] justify-center";
@@ -78,11 +82,13 @@ export default function ConfigTab() {
       maxPayload: formValues.maxPayload || droneConfig.maxPayload,
       baseEnergy: formValues.baseEnergy || droneConfig.baseEnergy,
       weightImpactFactor: formValues.weightImpactFactor || droneConfig.weightImpactFactor,
+      NumberOfDrone: formValues.NumberOfDrone || droneConfig.NumberOfDrone,
+      speed: formValues.speed || droneConfig.speed,
     };
 
     updateDroneConfig(droneConfigUpdates);
 
-    setFormValues({ maxPayload: 0, baseEnergy: 0, weightImpactFactor: 0 });
+    setFormValues({ maxPayload: 0, baseEnergy: 0, weightImpactFactor: 0, NumberOfDrone: 0, speed: 0 });
     
     // Optional: Add a small delay to simulate processing
     setTimeout(() => setIsUpdating(false), 500);
@@ -91,7 +97,7 @@ export default function ConfigTab() {
   const handleReset = () => {
     updateDroneConfig(DEFAULT_DRONE_CONFIG);
     setIsUpdating(false);
-    setFormValues({ maxPayload: 0, baseEnergy: 0, weightImpactFactor: 0 });
+    setFormValues({ maxPayload: 0, baseEnergy: 0, weightImpactFactor: 0, NumberOfDrone: 0, speed: 0 });
   };
 
   return (
@@ -116,6 +122,18 @@ export default function ConfigTab() {
             value={formValues.weightImpactFactor || droneConfig.weightImpactFactor}
             min={0.1} max={10} step={0.1} unit="×" icon={Activity}
             onChange={(v) => handleChange("weightImpactFactor", v)}
+          />
+          <ConfigInput
+            label="Number of Drones"
+            value={formValues.NumberOfDrone || droneConfig.NumberOfDrone}
+            min={1} max={20} step={1} unit="" icon={Activity}
+            onChange={(v) => handleChange("NumberOfDrone", v)}
+          />
+          <ConfigInput
+            label="Speed"
+            value={formValues.speed || droneConfig.speed}
+            min={0.1} max={10} step={0.1} unit="m/s" icon={Activity}
+            onChange={(v) => handleChange("speed", v)}
           />
 
           <div className="flex gap-4 mt-4">

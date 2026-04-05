@@ -44,7 +44,7 @@ export function ParcelProvider({ children }: ParcelProviderProps) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
 
-  const { setPathStats, setFlightPath } = usePath(); 
+  const { setDeliveryStats, setFlightPaths } = usePath(); 
 
   const totalWeight = parcels.reduce((sum, p) => sum + p.weight, 0);
 
@@ -75,8 +75,8 @@ export function ParcelProvider({ children }: ParcelProviderProps) {
 
       setParcels((prev) => [...prev, parcel]);
       
-      setFlightPath([]); 
-      setPathStats(null);
+      setFlightPaths([]);
+      setDeliveryStats(null);
       
       closeModal();
     },
@@ -85,14 +85,14 @@ export function ParcelProvider({ children }: ParcelProviderProps) {
 
   const deleteParcel = useCallback((id: string) => {
     setParcels((prev) => prev.filter((p) => p.id !== id));
-    setFlightPath([]);
-    setPathStats(null);
+    setFlightPaths([]);
+    setDeliveryStats(null);
   }, []);
 
   const resetAll = useCallback(() => {
     setParcels([]);
-    setFlightPath([]);
-    setPathStats(null);
+    setFlightPaths([]);
+    setDeliveryStats(null);
   }, []);
 
   const value: ParcelContextType = {

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import type { ReactNode } from "react";
+import { STATION_LOCATION , STATION_NAME } from "../constants";
 
 // ─── Interfaces ──────────────────────────────────────────────────────────────
 
@@ -28,7 +29,11 @@ interface DepoProviderProps {
 }
 
 export function DepoProvider({ children }: DepoProviderProps) {
-  const [depo, setDepo] = useState<Depo | null>(null);
+  const [depo, setDepo] = useState<Depo | null>({
+    name: STATION_NAME,
+    lat: STATION_LOCATION[0],
+    lon: STATION_LOCATION[1],
+  });
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
