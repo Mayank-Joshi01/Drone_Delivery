@@ -5,19 +5,25 @@ export const STATION_NAME: string = "New Delhi";
 
 // ─── Default drone settings ───────────────────────────────────────────────────
 export interface DroneConfig {
-  maxPayload: number;
-  baseEnergy: number;
-  weightImpactFactor: number;
+  Max_Payload: number;
+  Battery_Voltage: number;
+  Battery_Capacity: number;
+  Total_Rotor_Area: number;
+  Front_Area: number;
   NumberOfDrone:number;
-  speed: number;// m/s
+  Drone_Weight:number;
+  Speed: number;//m/s
 }
 
 export const DEFAULT_DRONE_CONFIG: DroneConfig = {
-  maxPayload: 12,
-  baseEnergy: 100,
-  weightImpactFactor: 2.5,
-  NumberOfDrone: 5,
-  speed: 2,
+Max_Payload: 2.5,        // kg
+  Battery_Voltage: 22.2,   // Volts
+  Battery_Capacity: 10000, // mAh
+  Total_Rotor_Area: 0.28,  // m²
+  Front_Area: 0.1,         // m²
+  NumberOfDrone: 1,        // count
+  Drone_Weight: 2.5,       // kg
+  Speed: 15.0              // m/s
 };
 
 // ─── Priority bands ───────────────────────────────────────────────────────────

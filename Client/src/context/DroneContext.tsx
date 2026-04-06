@@ -4,11 +4,14 @@ import { DEFAULT_DRONE_CONFIG } from "../constants";
 
 // 1. Define the shape of drone configuration
 export interface DroneConfig {
-  maxPayload: number;
-  baseEnergy: number;
-  weightImpactFactor: number;
+  Max_Payload: number;
+  Battery_Voltage: number;
+  Battery_Capacity: number;
+  Total_Rotor_Area: number;
+  Front_Area: number;
   NumberOfDrone:number;
-  speed: number; // m/s
+  Drone_Weight:number;
+  Speed: number;//m/s
 }
 
 // 2. Define the shape of the Context value
