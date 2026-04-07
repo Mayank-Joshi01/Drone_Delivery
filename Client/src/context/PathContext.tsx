@@ -75,7 +75,11 @@ export function PathProvider({ children }: PathProviderProps) {
           estimatedTime: p.Time / 60, // convert to mins
           totalParcelsDelivered: p.Parcels,
         },
-        path: p.Waypoints.map((wp) => [wp[0] , wp[1]] as PathWaypoint), // Ensure correct typing
+        path: [
+            start, 
+            ...p.Waypoints.map((wp) => [wp[0] , wp[1]] as PathWaypoint), 
+            start
+        ],
       }));
 
       setFlightPaths(formattedFlightPaths);

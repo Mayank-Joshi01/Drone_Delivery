@@ -4,6 +4,7 @@ import { useParcel } from "../context/ParcleContext";
 import { usePath } from "../context/PathContext";
 import type { LatLngTuple } from "leaflet";
 import { useDepo } from "../context/DepoContext";
+import axios from "axios";
 
 // ─── Interfaces ──────────────────────────────────────────────────────────────
 
@@ -11,8 +12,18 @@ interface UseDispatchReturn {
   handleCalculatePath: () => Promise<void>;
 }
 
+interface Paths{
+  Time: number;
+  Energy: number;
+  Distance: number;
+  Parcels: number;
+  Parcels_Delivered: number[];
+  Waypoints: LatLngTuple[];
+}
 
-
+interface Response {
+  paths: Paths[];
+}
 
 export type CoordTuple = [number, number];
 
@@ -31,17 +42,20 @@ export function useDispatch(): UseDispatchReturn {
       const Parcels = parcels.map(p => ({
         id: p.id,
         lat: p.lat,
-        lng: p.lon,
-        wt : p.weight,
+        lon: p.lon,
+        weight : p.weight *1000, // weight of the parcel (grams)
         priority : p.priority
       }));
 
       const Drone = {
-        maxPayload: droneConfig.maxPayload,
-        batteryLife: droneConfig.baseEnergy,  // base enery 
-        WIF : droneConfig.weightImpactFactor, // weight impact factor
+        Max_Payload: droneConfig.Max_Payload *1000, // maximum payload capacity of the drone (grams)
+        Battery_Voltage: droneConfig.Battery_Voltage,  // voltage of the battery (V) 
+        Battery_Capacity: droneConfig.Battery_Capacity, // capacity of the battery (mAh)
         NumberOfDrone: droneConfig.NumberOfDrone, // Number of Drones
-        speed: droneConfig.speed, // Drone speed (m/s)
+        Speed: droneConfig.Speed, // Drone speed (m/s)
+        Front_Area: droneConfig.Front_Area, // Front area for drag calculation
+        Total_Rotor_Area: droneConfig.Total_Rotor_Area, // Rotor area for hover power calculation
+        Drone_Weight: droneConfig.Drone_Weight *1000, // Weight of the drone itself (grams)
       };
 
       const Depo = {
@@ -50,69 +64,24 @@ export function useDispatch(): UseDispatchReturn {
       };
 
 
-const waypoints1 = Parcels.slice(0, 3).map(p => [p.lat, p.lng]);   // parcels 0–2
-const waypoints2 = Parcels.slice(3, 6).map(p => [p.lat, p.lng]);   // parcels 3–5
-const waypoints3 = Parcels.slice(6, 9).map(p => [p.lat, p.lng]);   // parcels 6–8
-const waypoints4 = Parcels.slice(9, 12).map(p => [p.lat, p.lng]);  // parcels 9–11
-const waypoints5 = Parcels.slice(12, 15).map(p => [p.lat, p.lng]); // parcels 12–14
-      
-const dummyResponse = {
-  paths: [
-    {
-      "Time": 342,
-      "Energy": 78.5,
-      "Distance": 4200,
-      "Parcels": 3,
-      "Parcels_Delivered": [Parcels[0].id, Parcels[1].id, Parcels[2].id],
-      "Waypoints": waypoints1
-    },
-    {
-      "Time": 518,
-      "Energy": 91.3,
-      "Distance": 6750,
-      "Parcels": 4,
-      "Parcels_Delivered": [Parcels[3].id, Parcels[4].id, Parcels[5].id, Parcels[6].id],
-      "Waypoints": waypoints2
-    },
-    {
-      "Time": 215,
-      "Energy": 54.2,
-      "Distance": 2800,
-      "Parcels": 2,
-      "Parcels_Delivered": [Parcels[7].id, Parcels[8].id],
-      "Waypoints": waypoints3
-    },
-    {
-      "Time": 670,
-      "Energy": 88.7,
-      "Distance": 8100,
-      "Parcels": 5,
-      "Parcels_Delivered": [Parcels[9].id, Parcels[10].id, Parcels[11].id, Parcels[12].id, Parcels[13].id],
-      "Waypoints": waypoints4
-    },
-    {
-      "Time": 430,
-      "Energy": 65.9,
-      "Distance": 5300,
-      "Parcels": 3,
-      "Parcels_Delivered": [Parcels[14].id, Parcels[15].id, Parcels[16].id],
-      "Waypoints": waypoints5
-    },
-  ]
-}
 
-      /// api code to calculate path and stats based on Parcels, Drone, and Depo data
+      axios.post('http://localhost:5000/api/dispatch', {
+        Drone,
+        Depo,
+        Parcels
+      })
+      .then(response => {
+        const data = response.data;
+        console.log("API Response:", data);
+        // Process the response data as needed
+        const res = data; // Placeholder for API response
 
+      calculatePath([Depo['lat'], Depo['lon']] , res.paths) ;
 
-      /// Output 
-      const response = dummyResponse; // Placeholder for API response
-
-      calculatePath([Depo['lat'], Depo['lon']] , response.paths) ;
-
-      const totalParcelsDelivered = response.paths.reduce((sum, path) => sum + path.Parcels, 0);
+      const totalParcelsDelivered = res.paths.reduce((sum :any, path : any) => sum + path.Parcels, 0);
 
       parcels.forEach(p => {
-        if (response.paths.some(path => path.Parcels_Delivered.includes(p.id))) {
+        if (res.paths.some( (path : any) => path.Parcels_Delivered.includes(p.id))) {
           p.delivered = true;
         } else {
           p.delivered = false;
@@ -124,6 +93,68 @@ const dummyResponse = {
         totalParcelsDelivered: totalParcelsDelivered,
         ParcelsLeft: Parcels.length - totalParcelsDelivered,
       });
+      })
+      .catch(error => {
+        console.error("API Error:", error);
+        // Handle errors as needed
+      });
+
+// const waypoints1 = Parcels.slice(0, 3).map(p => [p.lat, p.lon]);   // parcels 0–2
+// const waypoints2 = Parcels.slice(3, 6).map(p => [p.lat, p.lon]);   // parcels 3–5
+// const waypoints3 = Parcels.slice(6, 9).map(p => [p.lat, p.lon]);   // parcels 6–8
+// const waypoints4 = Parcels.slice(9, 12).map(p => [p.lat, p.lon]);  // parcels 9–11
+// const waypoints5 = Parcels.slice(12, 15).map(p => [p.lat, p.lon]); // parcels 12–14
+      
+// const dummyResponse = {
+//   paths: [
+//     {
+//       "Time": 342,
+//       "Energy": 78.5,
+//       "Distance": 4200,
+//       "Parcels": 3,
+//       "Parcels_Delivered": [Parcels[0].id, Parcels[1].id, Parcels[2].id],
+//       "Waypoints": waypoints1
+//     },
+//     {
+//       "Time": 518,
+//       "Energy": 91.3,
+//       "Distance": 6750,
+//       "Parcels": 4,
+//       "Parcels_Delivered": [Parcels[3].id, Parcels[4].id, Parcels[5].id, Parcels[6].id],
+//       "Waypoints": waypoints2
+//     },
+//     {
+//       "Time": 215,
+//       "Energy": 54.2,
+//       "Distance": 2800,
+//       "Parcels": 2,
+//       "Parcels_Delivered": [Parcels[7].id, Parcels[8].id],
+//       "Waypoints": waypoints3
+//     },
+//     {
+//       "Time": 670,
+//       "Energy": 88.7,
+//       "Distance": 8100,
+//       "Parcels": 5,
+//       "Parcels_Delivered": [Parcels[9].id, Parcels[10].id, Parcels[11].id, Parcels[12].id, Parcels[13].id],
+//       "Waypoints": waypoints4
+//     },
+//     {
+//       "Time": 430,
+//       "Energy": 65.9,
+//       "Distance": 5300,
+//       "Parcels": 3,
+//       "Parcels_Delivered": [Parcels[14].id, Parcels[15].id, Parcels[16].id],
+//       "Waypoints": waypoints5
+//     },
+//   ]
+// }
+
+      /// api code to calculate path and stats based on Parcels, Drone, and Depo data
+
+
+      /// Output 
+      
 
   }, [
     parcels, 
