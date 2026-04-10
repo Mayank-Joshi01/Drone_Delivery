@@ -14,6 +14,7 @@ import { usePath} from "../../context/PathContext";
 import type { PathStats } from "../../context/PathContext";
 import MouseCoordinateOverlay from "./MouseMove";
 import MapController from "./MapController";
+import { useDrone } from "../../context/DroneContext";
 
 // Patch Leaflet icon paths once at module evaluation time
 fixLeafletDefaultIcons();
@@ -69,6 +70,7 @@ function PathStatsOverlay({ stats }: PathStatsOverlayProps) {
 export default function MapView() {
   const { parcels, openAddParcelModal } = useParcel();
   const { flightPaths , currentPath ,setCurrentPath} = usePath();
+  const  {drones} = useDrone();
 
   return (
     <div className="flex-1 relative">
@@ -111,6 +113,7 @@ export default function MapView() {
             <AnimatedPolyline 
               key={index} 
               positions={fp.path} 
+              color = {drones[index]?.color || "#00ff88"}
               onClick={() => {setCurrentPath(index); console.log(`Path ${index} clicked`)}} // Optional: log path clicks for debugging
             />
           ))

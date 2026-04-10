@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, } from "react";
 import type { ReactNode } from "react";
 import { usePath } from "./PathContext";
+import { useDrone } from "./DroneContext";
 
 // ─── Interfaces ──────────────────────────────────────────────────────────────
 
@@ -43,6 +44,7 @@ export function ParcelProvider({ children }: ParcelProviderProps) {
   const [parcels, setParcels] = useState<Parcel[]>([]);
   const [tempLocation, setTempLocation] = useState<Location | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const {drones , setDrones} = useDrone();
 
 
   const { setDeliveryStats, setFlightPaths } = usePath(); 
@@ -81,6 +83,7 @@ export function ParcelProvider({ children }: ParcelProviderProps) {
       setDeliveryStats(null);
       
       closeModal();
+      setDrones([]); // Clear drones to trigger recalculation with new parcel
     },
     [tempLocation, closeModal]
   );

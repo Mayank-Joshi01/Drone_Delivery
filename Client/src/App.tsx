@@ -50,11 +50,11 @@ export default function App() {
   return (
     <DepoProvider>
     <PathProvider>
+       <DroneProvider>
       <ParcelProvider>
-    <DroneProvider>
       <AppLayout />
-    </DroneProvider>
     </ParcelProvider>
+      </DroneProvider>
     </PathProvider>
     </DepoProvider>
   );

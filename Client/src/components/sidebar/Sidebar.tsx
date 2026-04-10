@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { Settings, Package} from "lucide-react";
+import { Settings, Package, Drone} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useParcel } from "../../context/ParcleContext"; 
 import ConfigTab from "./ConfigTab";
 import ManifestTab from "./ManifestTab";
+import DroneTab from "./DroneTab";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 // Defining the specific IDs allowed for our tabs
-type TabId = "config" | "manifest";
+type TabId = "config" | "manifest" | "Drones"; // Add more as needed
 
 interface Tab {
   id: TabId;
@@ -28,6 +29,7 @@ interface TabButtonProps {
 const TABS: Tab[] = [
   { id: "config",   label: "CONFIG",   Icon: Settings },
   { id: "manifest", label: "MANIFEST", Icon: Package  },
+  { id : "Drones", label : "DRONES", Icon : Drone     }
 ];
 
 // ─── Single tab button ────────────────────────────────────────────────────────
@@ -80,6 +82,7 @@ export default function Sidebar() {
       <div className="flex-1 overflow-y-auto p-4">
         {activeTab === "config"   && <ConfigTab />}
         {activeTab === "manifest" && <ManifestTab />}
+        {activeTab === "Drones" && <DroneTab/>}
       </div>
     </aside>
   );

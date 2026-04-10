@@ -6,11 +6,12 @@ import type { LatLngExpression } from "leaflet";
 interface AnimatedPolylineProps {
   positions: LatLngExpression[];
   onClick?: () => void; 
+  color?: string; // Optional: allow custom color for the polyline
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function AnimatedPolyline({ positions, onClick }: AnimatedPolylineProps) {
+export default function AnimatedPolyline({ positions, onClick ,color}: AnimatedPolylineProps) {
   if (!positions || positions.length < 2) return null;
 
   // We wrap the callback in an object that Leaflet understands
@@ -26,7 +27,7 @@ export default function AnimatedPolyline({ positions, onClick }: AnimatedPolylin
       <Polyline
         positions={positions}
         pathOptions={{ 
-          color: "#00ff88", 
+          color: color || "#00ff88", 
           weight: 12, // Increased hit-box weight
           opacity: 0.12 
         }}
@@ -38,7 +39,7 @@ export default function AnimatedPolyline({ positions, onClick }: AnimatedPolylin
       <Polyline
         positions={positions}
         pathOptions={{
-          color: "#00ff88",
+          color: color || "#00ff88",
           weight: 2,
           opacity: 0.9,
           dashArray: "10, 6",

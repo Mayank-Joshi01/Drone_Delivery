@@ -6,6 +6,7 @@ import type { LatLngTuple } from "leaflet";
 import { useDepo } from "../context/DepoContext";
 import axios from "axios";
 
+
 // ─── Interfaces ──────────────────────────────────────────────────────────────
 
 interface UseDispatchReturn {
@@ -21,15 +22,41 @@ interface Paths{
   Waypoints: LatLngTuple[];
 }
 
+export interface Drone {
+  id:string;
+  loc:[number, number]; // [latitude, longitude
+  parcels: string[] | null; // List of parcel IDs
+  parcelsDelivered: string[] | null; // List of delivered parcel IDs
+  parcelsLeft: string[] | null ; // List of undelivered parcel IDs
+  name:string;
+  batteryLeft: number; // Percentage of battery left
+  status: "idle" | "delivering" | "returning"; // Current status of the drone
+  altitude: number; // Current altitude of the drone
+  color:string;
+}
+
 interface Response {
   paths: Paths[];
 }
 
 export type CoordTuple = [number, number];
 
+export function generateDroneColor(index: number): string {
+  const goldenRatioConjugate = 0.618033988749895;
+  
+  // We use the index to ensure the color is deterministic 
+  // (Drone #1 always gets the same color on refresh)
+  let hue = (index * goldenRatioConjugate) % 1;
+  hue = hue * 360;
+
+  // Saturation: 80% (Vibrant)
+  // Lightness: 60% (Bright enough for dark mode, but keeps color)
+  return `hsl(${Math.round(hue)}, 80%, 60%)`;
+}
+
 export function useDispatch(): UseDispatchReturn {
 
-  const { droneConfig } = useDrone();
+  const { droneConfig,setDrones,drones } = useDrone();
   const { parcels, totalWeight } = useParcel();
   const { setIsCalculating , calculatePath , deliveryStats , setDeliveryStats, flightPaths} = usePath();
   const {depo} = useDepo(); 
@@ -77,6 +104,24 @@ export function useDispatch(): UseDispatchReturn {
         const res = data; // Placeholder for API response
 
       calculatePath([Depo['lat'], Depo['lon']] , res.paths) ;
+
+      for (const drone of res.paths) {
+  const newDrone: Drone = {
+    id: `drone-${Math.random().toString(36).substr(2, 9)}`,
+    loc: [Depo.lat, Depo.lon] as [number, number], 
+    parcels: drone.Parcels_Delivered.map((p: any) => p.toString()),
+    parcelsDelivered: [],
+    parcelsLeft: drone.Parcels_Delivered.map((p: any) => p.toString()),
+    name: `Drone-${Math.random().toString(36).substr(2, 9)}`,
+    batteryLeft: 100,
+    status: "idle", 
+    altitude: 5,
+    color: generateDroneColor(res.paths.indexOf(drone)),
+  };
+
+  // 4. Ensure setDrones is the setter from useState<Drone[]>([])
+  setDrones(prev => [...prev, newDrone]);
+}
 
       const totalParcelsDelivered = res.paths.reduce((sum :any, path : any) => sum + path.Parcels, 0);
 
