@@ -15,6 +15,7 @@ import type { PathStats } from "../../context/PathContext";
 import MouseCoordinateOverlay from "./MouseMove";
 import MapController from "./MapController";
 import { useDrone } from "../../context/DroneContext";
+import { LiveNoFlyZones } from "./LiveNoFlyZones";
 
 // Patch Leaflet icon paths once at module evaluation time
 fixLeafletDefaultIcons();
@@ -92,6 +93,7 @@ export default function MapView() {
         <MouseCoordinateOverlay />
         <MapController />
 
+        <LiveNoFlyZones />
         {/* Captures right-clicks and sends coordinates to ParcelContext */}
         <MapEventHandler onRightClick={openAddParcelModal} />
 
