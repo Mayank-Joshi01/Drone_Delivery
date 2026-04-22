@@ -5,6 +5,8 @@ import { usePath } from "../context/PathContext";
 import type { LatLngTuple } from "leaflet";
 import { useDepo } from "../context/DepoContext";
 import axios from "axios";
+import { useNoFlyZoneStore } from "../components/map/NoFlyZone";
+import * as turf from '@turf/turf';
 
 
 // ─── Interfaces ──────────────────────────────────────────────────────────────
@@ -39,6 +41,8 @@ interface Response {
   paths: Paths[];
 }
 
+type NoFlyZone = [number, number][]; // Array of [latitude, longitude] tuples representing the vertices of the no-fly zone polygon
+
 export type CoordTuple = [number, number];
 
 export function generateDroneColor(index: number): string {
@@ -62,6 +66,8 @@ export function useDispatch(): UseDispatchReturn {
   const {depo} = useDepo(); 
   const stationLocation = depo ? [depo.lat, depo.lon] as LatLngTuple : [0, 0] as LatLngTuple;
 
+        const zonesDict = useNoFlyZoneStore((state) => state.zones);
+      const allZones = Object.values(zonesDict);
   const handleCalculatePath = useCallback(async () => {
     
       setIsCalculating(true);
@@ -91,11 +97,80 @@ export function useDispatch(): UseDispatchReturn {
       };
 
 
+// 1. First Pass: Generate Bounding Boxes for everyone
+  const zonesWithBoundingBoxes = allZones.map((zone) => {
+    const turfCoords = zone.coordinates.map((coord) => [coord[1], coord[0]]);
+
+    const firstPt = turfCoords[0];
+    const lastPt = turfCoords[turfCoords.length - 1];
+    if (firstPt[0] !== lastPt[0] || firstPt[1] !== lastPt[1]) {
+      turfCoords.push(firstPt);
+    }
+
+    try {
+      const complexPoly = turf.polygon([turfCoords]);
+      const boundingBoxPoly = turf.envelope(complexPoly);
+
+      const quadCoords = boundingBoxPoly.geometry.coordinates[0].map(
+        (coord: any) => [coord[1], coord[0]] as [number, number]
+      );
+
+      return {
+        ...zone,
+        boundingBoxCoords: quadCoords,
+        // Save the Turf geometry object so we can run math on it in the next step
+        turfEnvelope: boundingBoxPoly 
+      };
+    } catch (error) {
+      console.error("Skipping a malformed polygon:", error);
+      return {
+        ...zone,
+        boundingBoxCoords: zone.coordinates,
+        turfEnvelope: null
+      };
+    }
+  });
+
+  // 2. THE NEW STEP: Spatial Pruning (Remove swallowed boxes)
+  const optimizedZones = zonesWithBoundingBoxes.filter((zoneA, indexA) => {
+    if (!zoneA.turfEnvelope) return true; // Keep it if math failed earlier
+
+    // Check if zoneA is swallowed by ANY other zone (zoneB)
+    const isSwallowed = zonesWithBoundingBoxes.some((zoneB, indexB) => {
+      // Don't compare the zone against itself
+      if (indexA === indexB || !zoneB.turfEnvelope) return false; 
+
+      // Check if Zone A is completely inside Zone B
+      const isInside = turf.booleanWithin(zoneA.turfEnvelope, zoneB.turfEnvelope);
+
+      // Edge case safety: If two zones are the exact same size and stack on top of each other,
+      // we don't want them to delete each other. We use the index as a tie-breaker.
+      if (isInside) {
+        const areaA = turf.area(zoneA.turfEnvelope);
+        const areaB = turf.area(zoneB.turfEnvelope);
+        
+        if (areaA === areaB && indexA > indexB) {
+           return false; // Let the other one swallow this one, but don't delete both!
+        }
+        return true; 
+      }
+
+      return false;
+    });
+
+    // Keep the zone ONLY if it was NOT swallowed by a larger zone
+    return !isSwallowed;
+  });
+
+  const finalNoFlyZones = optimizedZones.map(zone => zone.boundingBoxCoords);
+
+console.log("Simplified noFlyZones for API:", finalNoFlyZones);
 
       axios.post('http://localhost:5000/api/dispatch', {
         Drone,
         Depo,
-        Parcels
+        Parcels,
+        noFlyZones: finalNoFlyZones
       })
       .then(response => {
         const data = response.data;

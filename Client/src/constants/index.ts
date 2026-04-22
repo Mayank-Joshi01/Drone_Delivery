@@ -1,7 +1,7 @@
 // ─── Station / Hub ────────────────────────────────────────────────────────────
 // Typing as a tuple [number, number] ensures it always has exactly two coordinates
-export const STATION_LOCATION: [number, number] = [28.6139, 77.209]; 
-export const STATION_NAME: string = "New Delhi";
+export const STATION_LOCATION: [number, number] = [29.2225, 79.5286]; 
+export const STATION_NAME: string = "Haldwani Hub";
 
 // ─── Default drone settings ───────────────────────────────────────────────────
 export interface DroneConfig {

@@ -73,6 +73,8 @@ export default function MapView() {
   const { flightPaths , currentPath ,setCurrentPath} = usePath();
   const  {drones} = useDrone();
 
+  console.log("Rendering MapView with flightPaths:", flightPaths, "and currentPath index:", currentPath);
+
   return (
     <div className="flex-1 relative">
       {/* ── Overlays ── */}

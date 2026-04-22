@@ -67,7 +67,7 @@ export function PathProvider({ children }: PathProviderProps) {
 
   const calculatePath = useCallback((start: PathWaypoint, paths: ResponsePath[]) => {
     setIsCalculating(true);
-
+    console.log("Path calculated Sucessfully")
       const formattedFlightPaths: FlightPath[] = paths.map((p) => ({
         stats: {
           totalDistance: p.Distance / 1000, // convert to km
@@ -77,12 +77,12 @@ export function PathProvider({ children }: PathProviderProps) {
         },
         path: [
             start, 
-            ...p.Waypoints.map((wp) => [wp[0] , wp[1]] as PathWaypoint), 
-            start
+            ...p.Waypoints.map((wp) => [wp[0] , wp[1]] as PathWaypoint)
         ],
       }));
 
       setFlightPaths(formattedFlightPaths);
+      console.log("Flight Paths:", formattedFlightPaths);
       setIsCalculating(false);
 
   }, []);
