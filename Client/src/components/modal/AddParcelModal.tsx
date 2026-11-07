@@ -132,7 +132,7 @@ export default function AddParcelModal() {
               <ModalInput
                 type="number" 
                 min={0.1} 
-                max={droneConfig.maxPayload} 
+                max={droneConfig.Max_Payload} 
                 step={0.1}
                 value={form.weight} 
                 valueColor="#00ff88"

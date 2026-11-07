@@ -28,7 +28,6 @@ export interface Drone {
   color:string;
 }
 
-
 // 2. Define the shape of the Context value
 interface DroneContextType {
   droneConfig: DroneConfig;

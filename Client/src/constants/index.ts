@@ -16,13 +16,13 @@ export interface DroneConfig {
 }
 
 export const DEFAULT_DRONE_CONFIG: DroneConfig = {
-Max_Payload: 5.0,        // kg
+Max_Payload: 1.5,        // kg
   Battery_Voltage: 22.2,   // Volts
-  Battery_Capacity: 15000, // mAh
-  Total_Rotor_Area: 0.28,  // m²
-  Front_Area: 0.1,         // m²
+  Battery_Capacity: 12000, // mAh
+  Total_Rotor_Area: 0.45,  // m²
+  Front_Area: 0.08,         // m²
   NumberOfDrone: 3,        // count
-  Drone_Weight: 2.5,       // kg
+  Drone_Weight: 3,       // kg
   Speed: 5.0              // m/s
 };
 

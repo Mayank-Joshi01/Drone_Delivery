@@ -33,6 +33,18 @@ export interface FlightPath {
   path : PathWaypoint[];
 }
 
+export interface DeliveryDrone{
+  id:string;
+  currentLoc:[number,number]; // [latitude ,longitude]
+  batteryLeft:number; // in percentage
+  altitude:number // in meters
+  speed : number // m/s 
+  parcels:[string] // id of parcels
+  parcelsDelivered:[string] // id of parcels delivered
+  distanceTravelled:number;
+  estimatedTime:number;
+}
+
 export interface deliveryStats{
   totalParcelsDelivered : number;
   ParcelsLeft : number;

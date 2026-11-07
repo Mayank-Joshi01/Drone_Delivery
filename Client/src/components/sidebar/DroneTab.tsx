@@ -1,13 +1,25 @@
 import { Navigation2, Battery, Navigation, Package, Activity, Cpu } from "lucide-react";
 import { useDrone } from "../../context/DroneContext";
-import type { Drone as DroneType } from "../../context/DroneContext";
+import DroneModal from "../modal/DroneModal";
 
 // ─── Interfaces ──────────────────────────────────────────────────────────────
 
 interface DroneCardProps {
-  drone: DroneType;
+  drone: Drone;
 }
 
+interface Drone{
+   id:string;
+  loc:[number, number]; // [latitude, longitude
+  parcels: string[] | null; // List of parcel IDs
+  parcelsDelivered: string[] | null; // List of delivered parcel IDs
+  parcelsLeft: string[] | null ; // List of undelivered parcel IDs
+  name:string;
+  batteryLeft: number; // Percentage of battery left
+  status: "idle" | "delivering" | "returning"; // Current status of the drone
+  altitude: number; // Current altitude of the drone
+  color:string;
+}
 // ─── Sub-Components ──────────────────────────────────────────────────────────
 
 function DroneCard({ drone }: DroneCardProps) {
@@ -18,7 +30,7 @@ function DroneCard({ drone }: DroneCardProps) {
 
   return (
     <div className="bg-[#0a1a12] border border-[#0f2a1a] rounded-xl p-4 transition-all duration-300 hover:border-[#00ff8844] hover:shadow-[0_0_20px_#00ff8808] group animate-[fadeSlideIn_0.3s_ease]">
-      
+      <DroneModal drone={drone} />
       {/* Header: Name & ID */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
